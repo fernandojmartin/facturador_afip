@@ -1,0 +1,24 @@
+{
+  "contribuyente": {
+    "cuit": "000000000000",
+    "clave": "00XXxx00XX00",
+    "nombre": "JOHN DOE",  
+    "punto_venta": "3" 
+  },
+  "comprobantes": [
+    {
+      "punto_venta": "2",
+      "tipo": "2",
+      "fecha": "01/01/1970",
+      "concepto": "2",
+      "desde": "01/01/1970",
+      "hasta": "31/01/1970",
+      "vencimiento_pago": "05/02/1970",
+      "tipo_receptor": "5",
+      "pago": "contado",
+      "descripcion": "Nuestros servicios",
+      "medida": "7",
+      "monto": "1.00"
+    }
+  ]
+}
