@@ -1,5 +1,3 @@
-const afip_constants = require('./Constants/afip_constants');
-
 module.exports = class InvoiceFactory {
     page;
     data;
@@ -14,8 +12,7 @@ module.exports = class InvoiceFactory {
      * @returns {Invoice}
      */
     build(type) {
-        const invoiceType = afip_constants.tipo_comprobante[type];
-        const invoiceClassPath = `./InvoiceType/${invoiceType}`;
+        const invoiceClassPath = `./InvoiceType/${type}`;
         const invoiceClass = require(invoiceClassPath);
 
         return new invoiceClass(this.page, this.data);

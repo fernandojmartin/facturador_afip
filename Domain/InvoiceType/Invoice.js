@@ -1,3 +1,5 @@
+const afip_constants = require('../Constants/afip_constants');
+
 module.exports = class Invoice {
     selectors;
 
@@ -14,9 +16,12 @@ module.exports = class Invoice {
         await this.page.select(this.selectors.rcel.punto_venta, this.data.punto_venta);
     }
 
-    async pickInvoiceType() {
+    async pickInvoiceType(type) {
+        // TODO: Validate type exists
+        const invoiceTypeId = afip_constants.tipo_comprobante[type];
+
         await this.page.waitForTimeout(1000);
-        await this.page.select(this.selectors.rcel.tipo_comprobante, this.data.tipo);
+        await this.page.select(this.selectors.rcel.tipo_comprobante, invoiceTypeId);
         
         await this.nextStep();
     }

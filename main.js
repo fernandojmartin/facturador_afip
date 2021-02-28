@@ -2,15 +2,15 @@
  * Simple robot para generar comprobantes de AFIP
  * 
  * @author Fernando J. Martin <fernandojmartin@gmail.com>
- * @version 0.1 2021-02-26
+ * @version 0.1.1 2021-02-28
  */
 
 const puppeteer = require('puppeteer');
 const selectors = require('./Domain/Constants/afip_selectors');
-const data = require('./data.json');
 const InvoiceFactory = require('./Domain/InvoiceFactory');
 
-const run = async () => {
+const run = async (dataFile) => {
+    const data = require(dataFile);
     const browser = await puppeteer.launch({headless: false /*, slowMo: 1000, devtools: true,*/})
     const page = await browser.newPage()
     await page.setViewport({ width: 900, height: 720 });
@@ -37,7 +37,7 @@ const run = async () => {
 
     try {
         log('## INICIANDO SESION');
-        await logIn(page);
+        await logIn(page, data);
 
         log("\n## ENTRANDO A RCEL");
         await page.waitForSelector(selectors.navegacion.rcel, {visible: true});
@@ -94,7 +94,7 @@ const run = async () => {
  * @param page {Page}
  * @returns {Promise<void>}
  */
-const logIn = async (page) => {
+const logIn = async (page, data) => {
     await page.waitForSelector(selectors.login.cuit);
     await page.waitForSelector(selectors.login.siguiente);
 
@@ -142,7 +142,7 @@ const generateInvoices = async (invoices, page) => {
         await invoice.selectPOS();
 
         log(" > Seleccionar tipo de comprobante");
-        await invoice.pickInvoiceType();
+        await invoice.pickInvoiceType(invoiceData.tipo);
 
         log('  ~ Paso #1 - Fecha y concepto');
         await invoice.step1();
@@ -164,25 +164,6 @@ const generateInvoices = async (invoices, page) => {
         await page.click(selectors.rcel.menu_principal);
     }
 }
-
-const comprobantePaso1 = async (page, selectores, comprobante) => {
-    // await page.waitForSelector(selectors.rcel.fecha_comprobante, {visible: true});
-    // await page.type(selectors.rcel.fecha_comprobante, comprobante.fecha, {delay: 5});
-    // await page.select(selectors.rcel.concepto, comprobante.concepto);
-}
-
-const comprobantePaso2 = async (page, selectores, comprobante) => {
-    // await page.waitForSelector(selectors.rcel.destino, {visible: true});
-    // await page.select(selectors.rcel.destino, comprobante.destino); 
-    // await page.type(selectors.rcel.tipo_receptor, comprobante.tipo_receptor, {delay: 50}); 
-    // await page.type(selectors.rcel.id_receptor, comprobante.id_receptor, {delay: 50}); 
-    // await page.type(selectors.rcel.razon_social, comprobante.razon_social, {delay: 25}); 
-    // await page.type(selectors.rcel.domicilio, comprobante.domicilio, {delay: 10}); 
-    // await page.type(selectors.rcel.forma_pago, comprobante.forma_pago);
-}
-
-
-
 
 /**
  * Escribe datos a la consola

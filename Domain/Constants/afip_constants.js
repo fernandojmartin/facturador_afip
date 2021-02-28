@@ -1,6 +1,6 @@
 module.exports = {
     tipo_comprobante: {
-        2: "C",
-        39: "E"
+        "C": "2",
+        "E": "39"
     }
 }
