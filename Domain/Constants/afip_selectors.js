@@ -21,6 +21,12 @@ module.exports = {
         vencimiento_pago: '#vencimientopago',
         condicion_contribuyente: '#idivareceptor',
         pago_contado: '#formadepago1',
+        pago_debito: '#formadepago2',
+        pago_credito: '#formadepago3',
+        pago_ctacte: '#formadepago4',
+        pago_cheque: '#formadepago5',
+        pago_ticket: '#formadepago6',
+        pago_otra: '#formadepago7',
         concepto: '#idconcepto',
         destino: '#destino',
         tipo_receptor: '#nrodocreceptor',
@@ -34,5 +40,6 @@ module.exports = {
         confirmar: '#btngenerar',
         menu_principal: 'input[value="Menú Principal"]',
         salir: '#encabezado_salir a',
+        comprobante_generado: 'img[alt="ok"]',
     }
 };
