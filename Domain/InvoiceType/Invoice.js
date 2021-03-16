@@ -1,14 +1,21 @@
 const afip_constants = require('../Constants/afip_constants');
+const afip_selectors = require('../Constants/afip_selectors');
 
+// TODO: Add handling for multiple item lines
 module.exports = class Invoice {
     selectors;
 
     constructor() {
-        this.selectors = require('../Constants/afip_selectors');
+        this.selectors = afip_selectors;
     }
     
     async nextStep() {
+        await this.page.waitForTimeout(1000);
         await this.page.click(this.selectors.rcel.continuar);
+    }
+
+    async clearInput(selector) {
+        await this.page.$eval(selector, (el) => el.value = '');
     }
 
     async selectPOS() {
@@ -17,7 +24,6 @@ module.exports = class Invoice {
     }
 
     async pickInvoiceType(type) {
-        // TODO: Validate type exists
         const invoiceTypeId = afip_constants.tipo_comprobante[type];
 
         await this.page.waitForTimeout(1000);

@@ -7,14 +7,17 @@
 
 const puppeteer = require('puppeteer');
 const selectors = require('./Domain/Constants/afip_selectors');
+const constants = require('./Domain/Constants/afip_constants');
 const InvoiceFactory = require('./Domain/InvoiceFactory');
 
-const run = async (dataFile) => {
-    const data = require(dataFile);
+const run = async (options) => {
+    // await preCheck(options.dataFile);
+
+    const data = require(options.dataFile);
     const browser = await puppeteer.launch({headless: false /*, slowMo: 1000, devtools: true,*/})
     const page = await browser.newPage()
     await page.setViewport({ width: 900, height: 720 });
-    await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml')
+    await page.goto(constants.url);
 
     const getNewPageWhenLoaded =  async () => {
         return new Promise(x =>
@@ -52,12 +55,15 @@ const run = async (dataFile) => {
         // Capture & manage alert-boxes
         await newPage.on('dialog', async (dialog) => { 
             log(dialog.message());
+
             await newPage.waitForTimeout(1500);
-            
+            console.log(options.applyTransaction ? 'apply transaction' : 'simulate');
+
             /* Generar comprobante? */
             if (dialog.message().match(/generar un nuevo comprobante/i)) {
-                await dialog.dismiss();
-                log('~~ Alert Dismissed ~~');
+                // options.applyTransaction ? dialog.accept() : dialog.dismiss();
+                
+                dialog.dismiss(); log('~~ Alert Dismissed ~~');
             }
 
             /* Salir de RCEL? */
@@ -88,10 +94,68 @@ const run = async (dataFile) => {
     }
 };
 
+// const hasAllKeys = (object, keys) => {
+//     keys.map((prop) => {
+//         if(object.hasOwnProperty(prop) === false) {
+//             throw new Error(`La propiedad '${prop}' es requerida.`)
+//         }
+//     });
+//     return true;
+// }
+
+const preCheck = async (dataFile) => {
+    const fs = require('fs');
+    try {
+        log(`comprobando que el archivo de datos '${dataFile}' existe: `);
+        if (fs.existsSync(dataFile) === true) {
+            log('[ OK ]'); 
+        } else {
+            throw new Error('El archivo de datos no existe');
+        }
+
+        const data = require(dataFile);
+        log('Comprobando estructura básica del archivo de datos: ');
+        if (hasAllKeys(data, ['contribuyente','comprobantes'])) {
+            log('[ OK ]');
+        } 
+        
+        log('Comprobando estructura de datos del contribuyente: ');
+        if (hasAllKeys(data.contribuyente, ['cuit','clave', 'nombre'])) {
+            log('[ OK ]');
+        }
+
+        // log('Comprobando estructura de los comprobantes: ');
+        // invoiceStructureChecker(data.comprobantes);
+
+    } catch(e) {
+        console.error(e);
+    } 
+}
+
+const invoiceStructureChecker = (invoiceData) => {
+    // TODO: Implement Joi() or other validator schema
+    const formats = {
+        "C": ['tipo','punto_venta','fecha','concepto','desde','hasta','vencimiento_pago','tipo_receptor','pago','descripcion','medida','monto'],
+        "E": ['tipo','punto_venta','fecha','concepto','destino','tipo_receptor','id_receptor','razon_social','domicilio','forma_pago','descripcion','medida','monto'],
+    }
+    for (data of invoiceData) {
+        console.log('DATA:', data);
+        if (!data.hasOwnProperty('tipo')) {
+            throw new Error(`El tipo de comprobante es requerido @ [${invoiceData.indexOf(data)}] \n${data}`);
+        }
+
+        if (formats.hasOwnProperty(data.tipo)) {
+            throw new Error(`El tipo de comprobante no es válido @ [${invoiceData.indexOf(data)}] \n${data}`)
+        }
+    }
+}
+
+
 /**
  * Inicia sesión en AFIP
  *
  * @param page {Page}
+ * @param data {Object<"./data.example.json">}
  * @returns {Promise<void>}
  */
 const logIn = async (page, data) => {
@@ -159,6 +223,11 @@ const generateInvoices = async (invoices, page) => {
         log(' > TIEMPO PARA CORROBORAR: 3 segundos...');
         await page.waitForTimeout(3000);
         await page.click(selectors.rcel.confirmar); 
+        
+        // if (options.applyTransaction) { 
+            await page.waitForSelector(selectors.rcel.comprobante_generado);
+        // }
+        await page.waitForTimeout(1000);
 
         log(" > Volviendo al menu principal");
         await page.click(selectors.rcel.menu_principal);
