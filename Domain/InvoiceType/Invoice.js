@@ -34,7 +34,7 @@ module.exports = class Invoice {
 
     async step3 () {
         await this.page.waitForSelector(this.selectors.rcel.descripcion, {visible: true});
-        await this.page.type(this.selectors.rcel.descripcion, this.data.descripcion, {delay: 50});
+        await this.page.type(this.selectors.rcel.descripcion, this.data.descripcion);
         await this.page.select(this.selectors.rcel.medida, this.data.medida); 
         await this.page.type(this.selectors.rcel.monto, this.data.monto);
 

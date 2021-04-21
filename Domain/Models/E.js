@@ -1,9 +1,10 @@
+const {today} = require("../../Application/utils");
 const Joi = require('joi').extend(require('@joi/date'));
 
 const schema = Joi.object().keys({
   tipo: Joi.string().equal('E').required(),
   punto_venta: Joi.number().min(1).max(9999).precision(0).required(),
-  fecha: Joi.date().format('DD/MM/YYYY').min('now').required().raw(),
+  fecha: Joi.date().format('DD/MM/YYYY').min(today()).required().raw(),
   concepto: Joi.number().required(),
   destino: Joi.number().required(),
   tipo_receptor: Joi.number().required(),

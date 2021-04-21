@@ -13,12 +13,15 @@ module.exports = class InvoiceTypeC extends Invoice {
 
     async step1() {
         await this.page.waitForSelector(this.selectors.rcel.fecha_comprobante, {visible: true});
+        await this.page.waitForTimeout(250);
         
         await this.clearInput(this.selectors.rcel.fecha_comprobante);
         await this.page.type(this.selectors.rcel.fecha_comprobante, this.data.fecha);
         
         await this.page.select(this.selectors.rcel.concepto, this.data.concepto);
         
+        await this.page.waitForSelector(this.selectors.rcel.periodo_desde, {visible: true});
+        await this.page.waitForTimeout(250);
         await this.clearInput(this.selectors.rcel.periodo_desde);
         await this.page.type(this.selectors.rcel.periodo_desde, this.data.desde, {delay: 15});
         
