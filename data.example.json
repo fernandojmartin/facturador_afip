@@ -2,21 +2,35 @@
   "contribuyente": {
     "cuit": "000000000000",
     "clave": "00XXxx00XX00",
-    "nombre": "JOHN DOE",  
-    "punto_venta": "3" 
+    "nombre": "JOHN DOE"
   },
   "comprobantes": [
     {
-      "punto_venta": "2",
-      "tipo": "2",
-      "fecha": "01/01/1970",
+      "tipo": "E",
+      "punto_venta": "3",
+      "fecha": "10/03/1986",
       "concepto": "2",
-      "desde": "01/01/1970",
-      "hasta": "31/01/1970",
-      "vencimiento_pago": "05/02/1970",
+      "destino": "212",
+      "tipo_receptor": "55000002126",
+      "id_receptor": "CUIT-CONTRIBUYENTE",
+      "razon_social": "Our cool company, LLC",
+      "domicilio": "6565 NE Miami Gardens Dr #625W North Miami Beach, FL 33179",
+      "forma_pago": "contado",
+      "descripcion": "Software development services",
+      "medida": "7",
+      "monto": "1.00"
+    },
+    {
+      "tipo": "C",
+      "punto_venta": "2",
+      "fecha": "16/04/2010",
+      "concepto": "2",
+      "desde": "01/04/2010",
+      "hasta": "15/04/2010",
+      "vencimiento_pago": "22/04/2010",
       "tipo_receptor": "5",
-      "pago": "contado",
-      "descripcion": "Nuestros servicios",
+      "forma_pago": "contado",
+      "descripcion": "Desarrollo de software",
       "medida": "7",
       "monto": "1.00"
     }
