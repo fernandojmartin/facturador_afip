@@ -16,6 +16,7 @@
     "@joi/date": "^2.0.1",
     "chalk": "^4.1.0",
     "commander": "^7.1.0",
+    "console-table-printer": "^2.8.1",
     "inquirer": "^8.0.0",
     "joi": "^17.4.0"
   }
