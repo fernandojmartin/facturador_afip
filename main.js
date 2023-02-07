@@ -11,6 +11,8 @@ import { constants } from './Domain/Constants/afip_constants.js';
 import InvoiceFactory from './Domain/InvoiceFactory.js';
 import Logger from './logger.js';
 const log = new Logger();
+const wait = (milliseconds) => new Promise(r => setTimeout(r, milliseconds));
+
 
 const runBot = async (contribuyente, comprobantes, commitInvoice) => {
 
@@ -162,13 +164,13 @@ const generateInvoices = async (invoices, commitInvoice,  page) => {
         await page.waitForSelector(config.rcel.confirmar, {visible: true}); 
         
         log.step('TIEMPO PARA CORROBORAR: 5 segundos...');
-        await page.waitForTimeout(5000);
+        await wait(5000);
         await page.click(config.rcel.confirmar); 
         
         if (commitInvoice) {
             await page.waitForSelector(rcel.comprobante_generado);
         }
-        await page.waitForTimeout(1000);
+        await wait(1000);
 
         log.step('Volviendo al menu principal');
         log.step('---------------------------');

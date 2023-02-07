@@ -13,7 +13,7 @@ const schemaFacturaE = Joi.object().keys({
   id_receptor: Joi.string(),
   razon_social: Joi.string().required(),
   domicilio: Joi.string(),
-  forma_pago: Joi.string().required(),
+  forma_pago: Joi.string(),
   descripcion: Joi.string().required(),
   medida: Joi.string().required(),
   monto: Joi.number().min(0).precision(2).required(),
