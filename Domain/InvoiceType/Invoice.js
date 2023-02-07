@@ -1,8 +1,8 @@
-const afip_constants = require('../Constants/afip_constants');
-const afip_selectors = require('../Constants/afip_selectors');
+import { config as afip_selectors } from '../../Domain/Constants/afip_selectors.js';
+import { constants as afip_constants } from '../../Domain/Constants/afip_constants.js';
 
 // TODO: Add handling for multiple item lines
-module.exports = class Invoice {
+export default class Invoice {
     selectors;
 
     constructor() {

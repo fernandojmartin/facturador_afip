@@ -6,15 +6,23 @@
  */
 
 // Load the error & exception handlers
-require('./error_handlers');
+process.on('uncaughtException', (err) => {
+    console.error('There was an uncaught error', err);
+    process.exit(1);
+})
 
-const afip_bot = require('./main');
-const contribuyenteModel = require('./Domain/Models/contribuyente').schema;
-const chalk = require('chalk');
-const inquirer = require('inquirer');
-const prompt = inquirer.createPromptModule();
-const validations = require('./Application/validations');
-const utils = require('./Application/utils');
+process.on('unhandledRejection', (err) => {
+    console.error(err);
+    process.exit(1);
+})
+
+import { runBot } from './main.js';
+import { contribuyenteSchema } from './Domain/Models/contribuyente.js';
+import chalk from 'chalk';
+import { createPromptModule } from 'inquirer';
+const prompt = createPromptModule();
+import { fileExists, hasAllKeys, invoiceStructure } from './Application/validations.js';
+import { loadJsonFile, printBool, printInvoicesStats } from './Application/utils.js';
 
 const exec = async () =>
 {
@@ -25,7 +33,7 @@ const exec = async () =>
             message: 'Archivo de datos?',
             // default: 'data_fjm.json',
             validate: (data_file) => {
-                if (!validations.fileExists(data_file)) {
+                if (!fileExists(data_file)) {
                     return 'Error: No se encuentra el archivo de datos';
                 }
                 return true;
@@ -37,24 +45,24 @@ const exec = async () =>
         const answers = await prompt(questions);
 
         //////// ==== VALIDATIONS ===== \\\\\\\\
-        const data = utils.loadJsonFile(answers.data_file);
+        const data = loadJsonFile(answers.data_file);
 
-        const allkeys = validations.hasAllKeys(data, ['contribuyente', 'comprobantes']);
+        const allkeys = hasAllKeys(data, ['contribuyente', 'comprobantes']);
         process.stdout.write(chalk.cyan('Comprobando estructura básica del archivo de datos: '));
-        console.log(utils.printBool(allkeys));
+        console.log(printBool(allkeys));
 
         process.stdout.write(chalk.cyan('Comprobando estructura de datos del contribuyente: '));
-        await contribuyenteModel.validate(data.contribuyente);
-        console.log(utils.printBool(true));
+        await contribuyenteSchema.validate(data.contribuyente);
+        console.log(printBool(true));
 
         process.stdout.write(chalk.cyan('Verificando estructura y datos de los comprobantes: '));
-        validations.invoiceStructure(data.comprobantes);
-        console.log(utils.printBool(true));
+        invoiceStructure(data.comprobantes);
+        console.log(printBool(true));
 
 
         //////// ==== CONFIRMATIONS ===== \\\\\\\\
         const contribuyente = `"${chalk.cyanBright(data.contribuyente.nombre)}"`;
-        utils.printInvoicesStats(data.comprobantes);
+        printInvoicesStats(data.comprobantes);
 
         const {ok_contribuyente} = await prompt([{
             type: 'confirm',
@@ -73,7 +81,7 @@ const exec = async () =>
         }
         ]);
 
-        afip_bot.run(data.contribuyente, data.comprobantes, commitInvoice);
+        runBot(data.contribuyente, data.comprobantes, commitInvoice);
 
     } catch (e) {
         console.log(chalk.red(e));

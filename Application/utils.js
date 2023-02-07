@@ -1,6 +1,6 @@
-const chalk = require('chalk');
-const fs = require('fs');
-const {Table} = require('console-table-printer');
+import chalk from 'chalk';
+import { readFileSync } from 'fs';
+import { Table } from 'console-table-printer';
 
 const today = () => {
     const d = new Date();
@@ -14,7 +14,7 @@ const printBool = (result) => {
 
 const loadJsonFile = (file) => {
     return JSON.parse(
-        fs.readFileSync(file, {encoding:'utf8', flag:'r'})
+        readFileSync(file, {encoding:'utf8', flag:'r'})
     );
 }
 
@@ -37,7 +37,7 @@ const printInvoicesStats = (data) => {
     table.printTable();
 }
 
-module.exports = {
+export {
     today,
     printBool,
     loadJsonFile,

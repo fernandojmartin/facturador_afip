@@ -1,6 +1,7 @@
-const fs = require('fs');
-const chalk = require("chalk");
-const {printBool} = require("./utils");
+import { existsSync } from 'fs';
+import chalk from 'chalk';
+import { printBool } from "./utils.js";
+import {schemaFacturaC, schemaFacturaE} from  "../Domain/Models/index.js"
 
 /**
  * Filters object's keys and returns the ones missing from the given keys list
@@ -31,18 +32,16 @@ const hasAllKeys = (object, keys) => {
  * @throws Error
  */
 const invoiceStructure = (data) => {
-    const models = require(`../Domain/Models`);
 
     for (const invoice of data) {
-        const type = invoice.tipo;
-        const model = models[type];
+        const invoiceType = invoice.tipo;
+        const model = invoiceType === "C" ? schemaFacturaC : schemaFacturaE; 
 
-        if (model === undefined) {
+        if (!model) {
             throw Error(`El sistema no soporta comprobantes tipo '${type}'`)
         }
 
-        const { schema } = model;
-        const isValid = schema.validate(invoice);
+        const isValid = model.validate(invoice);
 
         if (isValid.error) {
             let message = isValid.error.details[0].message;
@@ -61,9 +60,9 @@ const invoiceStructure = (data) => {
  * @param {string} file The file path relative tu current working dir
  * @returns {boolean}
  */
-const fileExists = (file) => fs.existsSync(file);
+const fileExists = (file) => existsSync(file);
 
-module.exports = {
+export {
     objectContainsKeys,
     hasAllKeys,
     invoiceStructure,
