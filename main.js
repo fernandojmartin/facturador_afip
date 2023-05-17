@@ -79,7 +79,7 @@ const runBot = async (contribuyente, comprobantes, commitInvoice) => {
         log.phase('TODOS LOS COMPROBANTES GENERADOS!')
 
         log.phase('SALIENDO DE RCEL');
-        await newPage.click(rcel.salir);
+        //await newPage.click(rcel.salir);
 
         log.phase('CERRAR SESION Y NAVEGADOR')
         await logOut(page);
@@ -167,9 +167,9 @@ const generateInvoices = async (invoices, commitInvoice,  page) => {
         await wait(5000);
         await page.click(config.rcel.confirmar); 
         
-        if (commitInvoice) {
-            await page.waitForSelector(rcel.comprobante_generado);
-        }
+        // if (commitInvoice) {
+        //     await page.waitForSelector(rcel.comprobante_generado);
+        // }
         await wait(1000);
 
         log.step('Volviendo al menu principal');

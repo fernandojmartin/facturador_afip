@@ -1,6 +1,6 @@
 import { existsSync } from 'fs';
 import chalk from 'chalk';
-import { printBool } from "./utils.js";
+import { printBool, today } from "./utils.js";
 import {schemaFacturaC, schemaFacturaE} from  "../Domain/Models/index.js"
 
 /**
@@ -42,6 +42,9 @@ const invoiceStructure = (data) => {
         }
 
         const isValid = model.validate(invoice);
+        if(!invoice.fecha) {
+            invoice.fecha = today(-1);
+        }
 
         if (isValid.error) {
             let message = isValid.error.details[0].message;

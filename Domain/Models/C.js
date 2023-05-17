@@ -1,4 +1,4 @@
-import { today } from "../../Application/utils.js";
+import { todayMonthFirst } from "../../Application/utils.js";
 import JoiImport from "joi";
 import DateExtension from "@joi/date";
 const Joi = JoiImport.extend(DateExtension);
@@ -11,7 +11,7 @@ const forma_pago_opts = [
 const schemaFacturaC = Joi.object().keys({
   tipo: Joi.string().equal('C').required(),
   punto_venta: Joi.number().min(1).max(9999).precision(0).required(),
-  fecha: Joi.date().format('DD/MM/YYYY').min(today()).required().raw(),
+  fecha: Joi.date().format('DD/MM/YYYY').min(todayMonthFirst()).required().raw(),
   concepto: Joi.number().required(),
   desde: Joi.date().format('DD/MM/YYYY').required().raw(),
   hasta: Joi.date().format('DD/MM/YYYY').min(Joi.ref('desde')).required().raw(),
