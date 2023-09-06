@@ -1,6 +1,6 @@
-const Invoice = require('./Invoice');
+import Invoice from "./Invoice.js";
 
-module.exports = class InvoiceTypeC extends Invoice {
+export default class InvoiceTypeC extends Invoice {
     page;
     data;
 

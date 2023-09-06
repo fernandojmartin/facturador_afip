@@ -1,4 +1,7 @@
-module.exports = class InvoiceFactory {
+import InvoiceTypeC from "./InvoiceType/C.js";
+import InvoiceTypeE from "./InvoiceType/E.js";
+
+export default class InvoiceFactory {
     page;
     data;
 
@@ -12,9 +15,10 @@ module.exports = class InvoiceFactory {
      * @returns {Invoice}
      */
     build(type) {
-        const invoiceClassPath = `./InvoiceType/${type}`;
-        const invoiceClass = require(invoiceClassPath);
+        if(type === "E") {
+            return new InvoiceTypeE(this.page, this.data);
+        }
 
-        return new invoiceClass(this.page, this.data);
+        return new InvoiceTypeC(this.page, this.data);
     }
 }

@@ -5,14 +5,16 @@
  * @version 0.2.0 2021-03-29
  */
 
-const puppeteer = require('puppeteer');
-const selectors = require('./Domain/Constants/afip_selectors');
-const constants = require('./Domain/Constants/afip_constants');
-const InvoiceFactory = require('./Domain/InvoiceFactory');
-const Logger = require('./logger');
+import puppeteer from 'puppeteer';
+import { config } from './Domain/Constants/afip_selectors.js';
+import { constants } from './Domain/Constants/afip_constants.js';
+import InvoiceFactory from './Domain/InvoiceFactory.js';
+import Logger from './logger.js';
 const log = new Logger();
+const wait = (milliseconds) => new Promise(r => setTimeout(r, milliseconds));
 
-const run = async (contribuyente, comprobantes, commitInvoice) => {
+
+const runBot = async (contribuyente, comprobantes, commitInvoice) => {
 
     const browser = await puppeteer.launch({headless: false /*, slowMo: 100, devtools: true,*/})
     const page = await browser.newPage()
@@ -43,8 +45,8 @@ const run = async (contribuyente, comprobantes, commitInvoice) => {
         await logIn(page, contribuyente);
 
         log.phase('ENTRANDO A RCEL');
-        await page.waitForSelector(selectors.navegacion.rcel, {visible: true});
-        await page.click(selectors.navegacion.rcel);
+        await page.waitForSelector(config.navegacion.rcel, {visible: true});
+        await page.click(config.navegacion.rcel);
         const newPagePromise = getNewPageWhenLoaded(); // RCEL se abre en una nueva pestaña!
         
         /**
@@ -69,7 +71,7 @@ const run = async (contribuyente, comprobantes, commitInvoice) => {
         });
 
         log.phase(`SELECCIONANDO PERSONA REPRESENTADA '${contribuyente.nombre}'`);
-        await newPage.click(selectors.navegacion.representada.replace('<nombre-contribuyente>', contribuyente.nombre));
+        await newPage.click(config.navegacion.representada.replace('<nombre-contribuyente>', contribuyente.nombre));
 
         // Emit each invoice...
         log.phase(`COMIENZA GENERACION DE ${comprobantes.length} COMPROBANTES`)
@@ -77,7 +79,7 @@ const run = async (contribuyente, comprobantes, commitInvoice) => {
         log.phase('TODOS LOS COMPROBANTES GENERADOS!')
 
         log.phase('SALIENDO DE RCEL');
-        await newPage.click(selectors.rcel.salir);
+        //await newPage.click(rcel.salir);
 
         log.phase('CERRAR SESION Y NAVEGADOR')
         await logOut(page);
@@ -97,20 +99,20 @@ const run = async (contribuyente, comprobantes, commitInvoice) => {
  * @returns {Promise<void>}
  */
 const logIn = async (page, contribuyente) => {
-    await page.waitForSelector(selectors.login.cuit);
-    await page.waitForSelector(selectors.login.siguiente);
+    await page.waitForSelector(config.login.cuit);
+    await page.waitForSelector(config.login.siguiente);
 
     log.step('Ingresando CUIT');
-    await page.type(selectors.login.cuit, contribuyente.cuit,{delay: 50});
-    await page.click(selectors.login.siguiente);
+    await page.type(config.login.cuit, contribuyente.cuit,{delay: 50});
+    await page.click(config.login.siguiente);
 
     log.step('Ingresando contraseña');
-    await page.waitForSelector(selectors.login.clave);
-    await page.waitForSelector(selectors.login.ingresar);
-    await page.type(selectors.login.clave, contribuyente.clave);
+    await page.waitForSelector(config.login.clave);
+    await page.waitForSelector(config.login.ingresar);
+    await page.type(config.login.clave, contribuyente.clave);
 
     log.step('Iniciando sesión');
-    await page.click(selectors.login.ingresar);
+    await page.click(config.login.ingresar);
     await page.waitForNavigation({waitUntil: ['domcontentloaded', 'networkidle2']});
 }
 
@@ -121,7 +123,7 @@ const logIn = async (page, contribuyente) => {
  */
 const logOut = async (page) => {
     await page.waitForTimeout(1000);
-    await page.click(selectors.navegacion.salir);
+    await page.click(config.navegacion.salir);
     await page.waitForTimeout(1500);
 }
 
@@ -137,8 +139,8 @@ const generateInvoices = async (invoices, commitInvoice,  page) => {
     for (const invoiceData of invoices) {
         counter++;
         log.step(`Generar comprobante ${counter}/${invoices.length} - Tipo '${invoiceData.tipo}' por $ ${invoiceData.monto}`);
-        await page.waitForSelector(selectors.rcel.generar_comprobante, {visible: true});
-        await page.click(selectors.rcel.generar_comprobante);
+        await page.waitForSelector(config.rcel.generar_comprobante, {visible: true});
+        await page.click(config.rcel.generar_comprobante);
 
         const factory = new InvoiceFactory(page, invoiceData);
         const invoice = factory.build(invoiceData.tipo);
@@ -159,23 +161,23 @@ const generateInvoices = async (invoices, commitInvoice,  page) => {
         await invoice.step3();
         
         log.substep('Paso #4 - Confirmar');
-        await page.waitForSelector(selectors.rcel.confirmar, {visible: true}); 
+        await page.waitForSelector(config.rcel.confirmar, {visible: true}); 
         
         log.step('TIEMPO PARA CORROBORAR: 5 segundos...');
-        await page.waitForTimeout(5000);
-        await page.click(selectors.rcel.confirmar); 
+        await wait(5000);
+        await page.click(config.rcel.confirmar); 
         
-        if (commitInvoice) {
-            await page.waitForSelector(selectors.rcel.comprobante_generado);
-        }
-        await page.waitForTimeout(1000);
+        // if (commitInvoice) {
+        //     await page.waitForSelector(rcel.comprobante_generado);
+        // }
+        await wait(1000);
 
         log.step('Volviendo al menu principal');
         log.step('---------------------------');
-        await page.click(selectors.rcel.menu_principal);
+        await page.click(config.rcel.menu_principal);
     }
 }
 
 
 
-module.exports = {run};
+export { runBot };

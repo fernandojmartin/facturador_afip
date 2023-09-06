@@ -1,4 +1,4 @@
-module.exports = {
+const config =  {
     login: {
         cuit: '#F1\\:username',
         clave: '#F1\\:password',
@@ -6,7 +6,7 @@ module.exports = {
         ingresar: '#F1\\:btnIngresar',
     },
     navegacion: {
-        rcel: 'div[title="rcel"]',
+        rcel: 'text/Comprobantes en línea',
         representada: 'input[value="<nombre-contribuyente>"]',
         salir: 'a[title="Salir"]',
     },
@@ -43,3 +43,5 @@ module.exports = {
         comprobante_generado: 'img[alt="ok"]',
     }
 };
+
+export { config };

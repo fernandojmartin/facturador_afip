@@ -1,11 +1,23 @@
-const chalk = require('chalk');
-const fs = require('fs');
-const {Table} = require('console-table-printer');
+import chalk from 'chalk';
+import { readFileSync } from 'fs';
+import { Table } from 'console-table-printer';
 
-const today = () => {
+const today = (addDays = 0) => {
     const d = new Date();
+    if(addDays != 0) 
+        d.setDate(d.getDate() + addDays);
+
+    return [d.getDate(), d.getMonth()+1, d.getFullYear()]
+        .map(n => n < 10 ? `0${n}` : `${n}`).join("/");
+}
+
+const todayMonthFirst = (addDays = 0) => {
+    const d = new Date();
+    if(addDays != 0) 
+        d.setDate(d.getDate() + addDays);
+
     return [d.getMonth()+1, d.getDate(), d.getFullYear()]
-        .map(n => n < 10 ? `0${n}` : `${n}`).join('-');
+        .map(n => n < 10 ? `0${n}` : `${n}`).join("-");
 }
 
 const printBool = (result) => {
@@ -14,7 +26,7 @@ const printBool = (result) => {
 
 const loadJsonFile = (file) => {
     return JSON.parse(
-        fs.readFileSync(file, {encoding:'utf8', flag:'r'})
+        readFileSync(file, {encoding:'utf8', flag:'r'})
     );
 }
 
@@ -37,10 +49,11 @@ const printInvoicesStats = (data) => {
     table.printTable();
 }
 
-module.exports = {
+export {
     today,
     printBool,
     loadJsonFile,
     countInvoices,
     printInvoicesStats,
+    todayMonthFirst,
 }

@@ -1,4 +1,2 @@
-module.exports = {
-    C: require('./C'),
-    E: require('./E'),
-}
+export { schemaFacturaC } from "./C.js";
+export { schemaFacturaE } from "./E.js";

@@ -1,6 +1,6 @@
-const chalk = require("chalk");
+import chalk from 'chalk';
 
-module.exports = class Logger {
+export default class Logger {
     log(data) {
         console.log(typeof data === "string" ? data : {...data});
     }
